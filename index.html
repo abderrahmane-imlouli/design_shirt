@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T-Shirt Design Tool</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Design Your T-Shirt</h1>
+    </header>
+    <main>
+        <div class="design-tool">
+            <div class="canvas-container">
+                <canvas id="tshirt-canvas"></canvas>
+            </div>
+            <div class="controls">
+                <label for="text">Add Text:</label>
+                <input type="text" id="text" placeholder="Enter text">
+                <button id="add-text">Add Text</button>
+                <label for="image-upload">Upload Image:</label>
+                <input type="file" id="image-upload" accept="image/*">
+                <button id="download-design">Download Design</button>
+                <button id="save-design">Save Design</button>
+            </div>
+        </div>
+    </main>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
+
