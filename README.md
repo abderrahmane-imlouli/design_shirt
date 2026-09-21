@@ -28,7 +28,7 @@ This project helped me:
 - Understand interactive frontend design
 - Prepare for more advanced projects with backend integration
 ## live Demo
-designyourshirt.netlify.app
+https://designyourshirt.netlify.app
 
 ## Project Status
 
