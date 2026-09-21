@@ -3,30 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T-Shirt Design Tool</title>
+
+    <title>Design Your Shirt</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
-    <header>
-        <h1>Design Your T-Shirt</h1>
-    </header>
-    <main>
-        <div class="design-tool">
-            <div class="canvas-container">
-                <canvas id="tshirt-canvas"></canvas>
-            </div>
-            <div class="controls">
-                <label for="text">Add Text:</label>
-                <input type="text" id="text" placeholder="Enter text">
-                <button id="add-text">Add Text</button>
-                <label for="image-upload">Upload Image:</label>
-                <input type="file" id="image-upload" accept="image/*">
-                <button id="download-design">Download Design</button>
-                <button id="save-design">Save Design</button>
-            </div>
+
+<header class="topbar">
+
+    <div class="brand">
+        <div class="brand-icon">DS</div>
+
+        <div>
+            <h1>Design Your Shirt</h1>
+            <span>Create something unique</span>
         </div>
-    </main>
-    <script src="js/scripts.js"></script>
+    </div>
+
+    <div class="top-actions">
+        <button id="clear-design" class="btn btn-secondary">
+            Clear
+        </button>
+
+        <button id="save-design" class="btn btn-secondary">
+            Save
+        </button>
+
+        <button id="download-design" class="btn btn-primary">
+            Download
+        </button>
+    </div>
+
+</header>
+
+
+<main class="designer">
+
+    <!-- LEFT SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <span>👕</span>
+                <h2>Shirt</h2>
+            </div>
+
+            <label class="control-label">
+                Shirt Color
+            </label>
+
+            <div class="color-options">
+
+                <button
+                    class="color-btn active"
+                    data-color="#ffffff"
+                    style="background:#ffffff">
+                </button>
+
+                <button
+                    class="color-btn"
+                    data-color="#111111"
+                    style="background:#111111">
+                </button>
+
+                <button
+                    class="color-btn"
+                    data-color="#e63946"
+                    style="background:#e63946">
+                </button>
+
+                <button
+                    class="color-btn"
+                    data-color="#2563eb"
+                    style="background:#2563eb">
+                </button>
+
+                <button
+                    class="color-btn"
+                    data-color="#22c55e"
+                    style="background:#22c55e">
+                </button>
+
+                <button
+                    class="color-btn"
+                    data-color="#f59e0b"
+                    style="background:#f59e0b">
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <span>✏️</span>
+                <h2>Add Text</h2>
+            </div>
+
+            <label class="control-label" for="text">
+                Your text
+            </label>
+
+            <input
+                type="text"
+                id="text"
+                class="input"
+                placeholder="Enter your text..."
+                maxlength="40"
+            >
+
+            <div class="two-columns">
+
+                <div>
+                    <label class="control-label">
+                        Size
+                    </label>
+
+                    <input
+                        type="number"
+                        id="font-size"
+                        class="input"
+                        value="28"
+                        min="10"
+                        max="100"
+                    >
+                </div>
+
+                <div>
+                    <label class="control-label">
+                        Color
+                    </label>
+
+                    <input
+                        type="color"
+                        id="text-color"
+                        class="color-picker"
+                        value="#111111"
+                    >
+                </div>
+
+            </div>
+
+            <button id="add-text" class="btn btn-primary full-width">
+                + Add Text
+            </button>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="panel-title">
+                <span>🖼️</span>
+                <h2>Add Image</h2>
+            </div>
+
+            <label for="image-upload" class="upload-box">
+
+                <div class="upload-icon">
+                    ↑
+                </div>
+
+                <strong>Upload an image</strong>
+
+                <span>PNG, JPG or WEBP</span>
+
+                <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/png,image/jpeg,image/webp"
+                    hidden
+                >
+
+            </label>
+
+        </div>
+
+
+        <div class="panel tips">
+
+            <div class="panel-title">
+                <span>💡</span>
+                <h2>Tips</h2>
+            </div>
+
+            <p>
+                Drag your text or image to position it on the shirt.
+            </p>
+
+            <p>
+                Select an element and press
+                <kbd>Delete</kbd>
+                to remove it.
+            </p>
+
+        </div>
+
+    </aside>
+
+
+    <!-- CANVAS AREA -->
+
+    <section class="workspace">
+
+        <div class="workspace-header">
+
+            <div>
+                <h2>Your Design</h2>
+                <p>Customize your shirt exactly the way you want.</p>
+            </div>
+
+            <div class="status">
+                <span class="status-dot"></span>
+                Ready to design
+            </div>
+
+        </div>
+
+
+        <div class="canvas-area">
+
+            <div id="canvas-container" class="canvas-container">
+
+                <canvas id="tshirt-canvas"></canvas>
+
+                <div id="elements-layer"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="workspace-footer">
+
+            <span>
+                Click an element to select it
+            </span>
+
+            <button id="delete-selected" class="delete-btn">
+                Delete selected
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<div id="toast" class="toast">
+    Design saved successfully!
+</div>
+
+
+<script src="js/scripts.js"></script>
+
 </body>
 </html>
-
