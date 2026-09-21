@@ -1,47 +1,115 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const canvas = document.getElementById("tshirt-canvas");
-    const ctx = canvas.getContext("2d");
+    const canvas =
+        document.getElementById("tshirt-canvas");
 
-    const elementsLayer = document.getElementById("elements-layer");
+    const ctx =
+        canvas.getContext("2d");
 
-    const textInput = document.getElementById("text");
-    const fontSizeInput = document.getElementById("font-size");
-    const textColorInput = document.getElementById("text-color");
+    const elementsLayer =
+        document.getElementById("elements-layer");
 
-    const addTextButton = document.getElementById("add-text");
-    const imageUpload = document.getElementById("image-upload");
 
-    const downloadButton = document.getElementById("download-design");
-    const saveButton = document.getElementById("save-design");
-    const clearButton = document.getElementById("clear-design");
+    const textInput =
+        document.getElementById("text");
 
-    const deleteButton = document.getElementById("delete-selected");
+    const addTextButton =
+        document.getElementById("add-text");
 
-    const colorButtons = document.querySelectorAll(".color-btn");
+    const imageUpload =
+        document.getElementById("image-upload");
 
-    const toast = document.getElementById("toast");
+    const downloadButton =
+        document.getElementById("download-design");
+
+    const clearButton =
+        document.getElementById("clear-design");
+
+    const deleteButton =
+        document.getElementById("delete-selected");
+
+    const selectedControls =
+        document.getElementById("selected-controls");
+
+    const scaleSlider =
+        document.getElementById("scale-slider");
+
+    const rotationSlider =
+        document.getElementById("rotation-slider");
+
+    const scaleValue =
+        document.getElementById("scale-value");
+
+    const rotationValue =
+        document.getElementById("rotation-value");
+
+    const scaleDown =
+        document.getElementById("scale-down");
+
+    const scaleUp =
+        document.getElementById("scale-up");
+
+    const toast =
+        document.getElementById("toast");
 
 
     /* =========================
-       CANVAS SETTINGS
+       SETTINGS
     ========================= */
 
-    const CANVAS_WIDTH = 360;
-    const CANVAS_HEIGHT = 480;
+    const WIDTH = 360;
+    const HEIGHT = 480;
 
-    canvas.width = CANVAS_WIDTH;
-    canvas.height = CANVAS_HEIGHT;
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
 
 
     let shirtColor = "#ffffff";
+
+    let shirtSize = "M";
+
+    let textColor = "#111111";
+
     let selectedElement = null;
 
     let dragData = null;
 
 
     /* =========================
-       DRAW T-SHIRT
+       T-SHIRT SIZES
+    ========================= */
+
+    const sizes = {
+
+        XS: {
+            scale: .78
+        },
+
+        S: {
+            scale: .88
+        },
+
+        M: {
+            scale: 1
+        },
+
+        L: {
+            scale: 1.08
+        },
+
+        XL: {
+            scale: 1.15
+        },
+
+        XXL: {
+            scale: 1.22
+        }
+
+    };
+
+
+    /* =========================
+       DRAW SHIRT
     ========================= */
 
     function drawShirt() {
@@ -49,25 +117,43 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.clearRect(
             0,
             0,
-            CANVAS_WIDTH,
-            CANVAS_HEIGHT
+            WIDTH,
+            HEIGHT
         );
+
+
+        const sizeScale =
+            sizes[shirtSize].scale;
+
 
         ctx.save();
 
-        ctx.fillStyle = shirtColor;
+        ctx.translate(
+            WIDTH / 2,
+            HEIGHT / 2
+        );
 
-        ctx.strokeStyle = "#d1d5db";
+        ctx.scale(
+            sizeScale,
+            sizeScale
+        );
+
+        ctx.translate(
+            -WIDTH / 2,
+            -HEIGHT / 2
+        );
+
+
+        ctx.fillStyle =
+            shirtColor;
+
+        ctx.strokeStyle =
+            "#cfd3d8";
 
         ctx.lineWidth = 2;
 
-        /*
-         * T-shirt shape
-         */
 
         ctx.beginPath();
-
-        // Left sleeve
 
         ctx.moveTo(85, 105);
 
@@ -77,23 +163,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ctx.lineTo(105, 180);
 
-
-        // Left body
-
         ctx.lineTo(105, 420);
-
-
-        // Bottom
 
         ctx.lineTo(255, 420);
 
-
-        // Right body
-
         ctx.lineTo(255, 180);
-
-
-        // Right sleeve
 
         ctx.lineTo(295, 205);
 
@@ -101,13 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ctx.lineTo(275, 105);
 
-
-        // Shoulder
-
         ctx.lineTo(225, 80);
 
-
-        // Collar
 
         ctx.quadraticCurveTo(
             210,
@@ -115,6 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
             180,
             120
         );
+
 
         ctx.quadraticCurveTo(
             150,
@@ -131,9 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ctx.stroke();
 
 
-        /*
-         * Collar
-         */
+        /* collar */
 
         ctx.beginPath();
 
@@ -145,12 +213,14 @@ document.addEventListener("DOMContentLoaded", () => {
             Math.PI
         );
 
-        ctx.strokeStyle = "rgba(0,0,0,.12)";
+        ctx.strokeStyle =
+            "rgba(0,0,0,.12)";
 
         ctx.stroke();
 
 
         ctx.restore();
+
     }
 
 
@@ -158,96 +228,244 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
+       SIZE SELECTION
+    ========================= */
+
+    document
+        .querySelectorAll(".size-btn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(".size-btn")
+                        .forEach(btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    shirtSize =
+                        button.dataset.size;
+
+
+                    drawShirt();
+
+                }
+            );
+
+        });
+
+
+    /* =========================
        SHIRT COLORS
     ========================= */
 
-    colorButtons.forEach(button => {
+    document
+        .querySelectorAll(
+            "#shirt-colors .color-btn"
+        )
+        .forEach(button => {
 
-        button.addEventListener("click", () => {
+            button.addEventListener(
+                "click",
+                () => {
 
-            colorButtons.forEach(btn => {
-                btn.classList.remove("active");
-            });
+                    document
+                        .querySelectorAll(
+                            "#shirt-colors .color-btn"
+                        )
+                        .forEach(btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
+                        );
 
-            button.classList.add("active");
 
-            shirtColor = button.dataset.color;
+                    button.classList.add(
+                        "active"
+                    );
 
-            drawShirt();
+
+                    shirtColor =
+                        button.dataset.color;
+
+
+                    drawShirt();
+
+                }
+            );
+
         });
 
-    });
+
+    /* =========================
+       TEXT COLORS
+    ========================= */
+
+    document
+        .querySelectorAll(
+            "#text-colors .text-color"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    document
+                        .querySelectorAll(
+                            "#text-colors .text-color"
+                        )
+                        .forEach(btn =>
+                            btn.classList.remove(
+                                "active"
+                            )
+                        );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    textColor =
+                        button.dataset.color;
+
+
+                    if (
+                        selectedElement &&
+                        selectedElement.dataset.type ===
+                        "text"
+                    ) {
+
+                        selectedElement.style.color =
+                            textColor;
+
+                    }
+
+                }
+            );
+
+        });
 
 
     /* =========================
        ADD TEXT
     ========================= */
 
-    addTextButton.addEventListener("click", () => {
+    addTextButton.addEventListener(
+        "click",
+        addText
+    );
 
-        const text = textInput.value.trim();
+
+    textInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter"
+            ) {
+
+                addText();
+
+            }
+
+        }
+    );
+
+
+    function addText() {
+
+        const text =
+            textInput.value.trim();
+
 
         if (!text) {
-            showToast("Please enter some text.");
+
+            showToast(
+                "Enter some text first."
+            );
+
             return;
+
         }
 
-        const fontSize =
-            parseInt(fontSizeInput.value) || 28;
-
-        const color =
-            textColorInput.value;
-
-        createTextElement(
-            text,
-            fontSize,
-            color
-        );
-
-        textInput.value = "";
-
-    });
-
-
-    function createTextElement(
-        text,
-        fontSize,
-        color
-    ) {
 
         const element =
             document.createElement("div");
 
-        element.className = "draggable";
 
-        element.textContent = text;
+        element.className =
+            "draggable";
 
-        element.dataset.type = "text";
 
-        element.style.left = "110px";
+        element.dataset.type =
+            "text";
 
-        element.style.top = "210px";
+
+        element.dataset.scale =
+            "100";
+
+
+        element.dataset.rotation =
+            "0";
+
+
+        element.textContent =
+            text;
+
+
+        element.style.left =
+            "120px";
+
+
+        element.style.top =
+            "210px";
+
 
         element.style.fontSize =
-            `${fontSize}px`;
+            "28px";
 
-        element.style.fontWeight = "700";
+
+        element.style.fontWeight =
+            "700";
+
+
+        element.style.color =
+            textColor;
+
 
         element.style.fontFamily =
             "Inter, Arial, sans-serif";
 
-        element.style.color = color;
 
-        elementsLayer.appendChild(element);
+        elementsLayer.appendChild(
+            element
+        );
+
 
         makeDraggable(element);
 
         selectElement(element);
+
+
+        textInput.value = "";
+
     }
 
 
     /* =========================
-       IMAGE UPLOAD
+       IMAGE
     ========================= */
 
     imageUpload.addEventListener(
@@ -257,15 +475,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const file =
                 event.target.files[0];
 
+
             if (!file) return;
 
-            if (!file.type.startsWith("image/")) {
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
 
                 showToast(
-                    "Please upload a valid image."
+                    "Invalid image."
                 );
 
                 return;
+
             }
 
 
@@ -273,65 +498,104 @@ document.addEventListener("DOMContentLoaded", () => {
                 new FileReader();
 
 
-            reader.onload = e => {
+            reader.onload =
+                e => {
 
-                createImageElement(
-                    e.target.result
-                );
+                    addImage(
+                        e.target.result
+                    );
 
-            };
+                };
 
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(
+                file
+            );
+
 
             imageUpload.value = "";
+
         }
     );
 
 
-    function createImageElement(src) {
+    function addImage(src) {
 
         const wrapper =
             document.createElement("div");
 
-        wrapper.className = "draggable";
 
-        wrapper.dataset.type = "image";
+        wrapper.className =
+            "draggable";
 
-        wrapper.style.left = "80px";
 
-        wrapper.style.top = "160px";
+        wrapper.dataset.type =
+            "image";
+
+
+        wrapper.dataset.scale =
+            "100";
+
+
+        wrapper.dataset.rotation =
+            "0";
+
+
+        wrapper.style.left =
+            "80px";
+
+
+        wrapper.style.top =
+            "160px";
+
 
         const img =
             document.createElement("img");
 
-        img.src = src;
 
-        img.style.width = "200px";
+        img.src =
+            src;
 
-        img.style.height = "auto";
 
-        wrapper.appendChild(img);
+        img.style.width =
+            "190px";
 
-        elementsLayer.appendChild(wrapper);
 
-        img.onload = () => {
+        wrapper.appendChild(
+            img
+        );
 
-            if (img.naturalWidth > img.naturalHeight) {
 
-                img.style.width = "200px";
+        elementsLayer.appendChild(
+            wrapper
+        );
 
-            } else {
 
-                img.style.width = "160px";
+        img.onload =
+            () => {
 
-            }
+                if (
+                    img.naturalWidth >
+                    img.naturalHeight
+                ) {
 
-        };
+                    img.style.width =
+                        "210px";
+
+                } else {
+
+                    img.style.width =
+                        "160px";
+
+                }
+
+            };
+
 
         makeDraggable(wrapper);
 
         selectElement(wrapper);
+
     }
 
 
@@ -349,14 +613,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
         }
 
-        selectedElement = element;
 
-        element.classList.add("selected");
+        selectedElement =
+            element;
+
+
+        element.classList.add(
+            "selected"
+        );
+
+
+        selectedControls.classList.add(
+            "visible"
+        );
+
+
+        const scale =
+            parseFloat(
+                element.dataset.scale || 100
+            );
+
+
+        const rotation =
+            parseFloat(
+                element.dataset.rotation || 0
+            );
+
+
+        scaleSlider.value =
+            scale;
+
+
+        rotationSlider.value =
+            rotation;
+
+
+        scaleValue.textContent =
+            `${Math.round(scale)}%`;
+
+
+        rotationValue.textContent =
+            `${Math.round(rotation)}°`;
+
     }
 
 
     /* =========================
-       DRAGGING
+       DRAG
     ========================= */
 
     function makeDraggable(element) {
@@ -367,12 +670,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 event.preventDefault();
 
-                selectElement(element);
+                selectElement(
+                    element
+                );
 
-                const layerRect =
-                    elementsLayer.getBoundingClientRect();
 
-                const elementRect =
+                const rect =
                     element.getBoundingClientRect();
 
 
@@ -382,13 +685,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     offsetX:
                         event.clientX -
-                        elementRect.left,
+                        rect.left,
 
                     offsetY:
                         event.clientY -
-                        elementRect.top,
-
-                    layerRect
+                        rect.top
 
                 };
 
@@ -409,7 +710,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     !dragData ||
                     dragData.element !== element
                 ) {
+
                     return;
+
                 }
 
 
@@ -442,19 +745,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 x =
                     Math.max(
                         0,
-                        Math.min(x, maxX)
+                        Math.min(
+                            x,
+                            maxX
+                        )
                     );
 
 
                 y =
                     Math.max(
                         0,
-                        Math.min(y, maxY)
+                        Math.min(
+                            y,
+                            maxY
+                        )
                     );
 
 
                 element.style.left =
                     `${x}px`;
+
 
                 element.style.top =
                     `${y}px`;
@@ -476,7 +786,162 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       DELETE ELEMENT
+       SCALE
+    ========================= */
+
+    scaleSlider.addEventListener(
+        "input",
+        () => {
+
+            if (!selectedElement) return;
+
+
+            const value =
+                Number(
+                    scaleSlider.value
+                );
+
+
+            updateScale(
+                selectedElement,
+                value
+            );
+
+        }
+    );
+
+
+    scaleDown.addEventListener(
+        "click",
+        () => {
+
+            if (!selectedElement) return;
+
+
+            let value =
+                Number(
+                    selectedElement.dataset.scale
+                );
+
+
+            value -= 10;
+
+
+            value =
+                Math.max(
+                    30,
+                    value
+                );
+
+
+            updateScale(
+                selectedElement,
+                value
+            );
+
+        }
+    );
+
+
+    scaleUp.addEventListener(
+        "click",
+        () => {
+
+            if (!selectedElement) return;
+
+
+            let value =
+                Number(
+                    selectedElement.dataset.scale
+                );
+
+
+            value += 10;
+
+
+            value =
+                Math.min(
+                    250,
+                    value
+                );
+
+
+            updateScale(
+                selectedElement,
+                value
+            );
+
+        }
+    );
+
+
+    function updateScale(
+        element,
+        value
+    ) {
+
+        element.dataset.scale =
+            value;
+
+
+        const rotation =
+            element.dataset.rotation || 0;
+
+
+        element.style.transform =
+            `scale(${value / 100}) rotate(${rotation}deg)`;
+
+
+        scaleSlider.value =
+            value;
+
+
+        scaleValue.textContent =
+            `${Math.round(value)}%`;
+
+    }
+
+
+    /* =========================
+       ROTATION
+    ========================= */
+
+    rotationSlider.addEventListener(
+        "input",
+        () => {
+
+            if (!selectedElement) return;
+
+
+            const rotation =
+                Number(
+                    rotationSlider.value
+                );
+
+
+            selectedElement.dataset.rotation =
+                rotation;
+
+
+            const scale =
+                Number(
+                    selectedElement.dataset.scale
+                );
+
+
+            selectedElement.style.transform =
+                `scale(${scale / 100}) rotate(${rotation}deg)`;
+
+
+            rotationValue.textContent =
+                `${rotation}°`;
+
+        }
+    );
+
+
+    /* =========================
+       DELETE
     ========================= */
 
     deleteButton.addEventListener(
@@ -494,12 +959,19 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             return;
+
         }
 
 
         selectedElement.remove();
 
-        selectedElement = null;
+        selectedElement =
+            null;
+
+
+        selectedControls.classList.remove(
+            "visible"
+        );
 
     }
 
@@ -522,7 +994,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       CLICK EMPTY SPACE
+       CLICK EMPTY
     ========================= */
 
     elementsLayer.addEventListener(
@@ -530,15 +1002,26 @@ document.addEventListener("DOMContentLoaded", () => {
         event => {
 
             if (
-                event.target === elementsLayer &&
-                selectedElement
+                event.target ===
+                elementsLayer
             ) {
 
-                selectedElement.classList.remove(
-                    "selected"
-                );
+                if (selectedElement) {
 
-                selectedElement = null;
+                    selectedElement.classList.remove(
+                        "selected"
+                    );
+
+                }
+
+
+                selectedElement =
+                    null;
+
+
+                selectedControls.classList.remove(
+                    "visible"
+                );
 
             }
 
@@ -547,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       CLEAR DESIGN
+       CLEAR
     ========================= */
 
     clearButton.addEventListener(
@@ -556,16 +1039,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 !confirm(
-                    "Are you sure you want to clear your design?"
+                    "Clear your entire design?"
                 )
             ) {
+
                 return;
+
             }
 
 
-            elementsLayer.innerHTML = "";
+            elementsLayer.innerHTML =
+                "";
 
-            selectedElement = null;
+
+            selectedElement =
+                null;
+
+
+            selectedControls.classList.remove(
+                "visible"
+            );
+
 
             drawShirt();
 
@@ -574,34 +1068,74 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================
-       CREATE FINAL IMAGE
+       EXPORT
+    ========================= */
+
+    downloadButton.addEventListener(
+        "click",
+        async () => {
+
+            const finalCanvas =
+                await createFinalCanvas();
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.download =
+                `tshirt-${shirtSize}.png`;
+
+
+            link.href =
+                finalCanvas.toDataURL(
+                    "image/png"
+                );
+
+
+            link.click();
+
+
+            showToast(
+                "Design downloaded!"
+            );
+
+        }
+    );
+
+
+    /* =========================
+       FINAL CANVAS
     ========================= */
 
     async function createFinalCanvas() {
 
         const finalCanvas =
-            document.createElement("canvas");
+            document.createElement(
+                "canvas"
+            );
+
 
         finalCanvas.width =
-            CANVAS_WIDTH;
+            WIDTH;
+
 
         finalCanvas.height =
-            CANVAS_HEIGHT;
+            HEIGHT;
+
 
         const finalCtx =
-            finalCanvas.getContext("2d");
+            finalCanvas.getContext(
+                "2d"
+            );
 
 
-        /*
-         * Draw shirt
-         */
+        drawShirtOnContext(
+            finalCtx
+        );
 
-        drawShirtOnContext(finalCtx);
-
-
-        /*
-         * Draw elements
-         */
 
         const elements =
             elementsLayer.querySelectorAll(
@@ -609,13 +1143,66 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
 
-        for (const element of elements) {
+        for (
+            const element of elements
+        ) {
 
             const x =
-                parseFloat(element.style.left);
+                parseFloat(
+                    element.style.left
+                );
+
 
             const y =
-                parseFloat(element.style.top);
+                parseFloat(
+                    element.style.top
+                );
+
+
+            const scale =
+                Number(
+                    element.dataset.scale ||
+                    100
+                ) / 100;
+
+
+            const rotation =
+                Number(
+                    element.dataset.rotation ||
+                    0
+                );
+
+
+            finalCtx.save();
+
+
+            const width =
+                element.offsetWidth *
+                scale;
+
+
+            const height =
+                element.offsetHeight *
+                scale;
+
+
+            finalCtx.translate(
+                x + width / 2,
+                y + height / 2
+            );
+
+
+            finalCtx.rotate(
+                rotation *
+                Math.PI /
+                180
+            );
+
+
+            finalCtx.scale(
+                scale,
+                scale
+            );
 
 
             if (
@@ -626,16 +1213,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 finalCtx.font =
                     `${element.style.fontSize} ${element.style.fontFamily}`;
 
+
+                finalCtx.fontWeight =
+                    element.style.fontWeight;
+
+
                 finalCtx.fillStyle =
                     element.style.color;
 
+
+                finalCtx.textAlign =
+                    "center";
+
+
                 finalCtx.textBaseline =
-                    "top";
+                    "middle";
+
 
                 finalCtx.fillText(
                     element.textContent,
-                    x,
-                    y
+                    0,
+                    0
                 );
 
             }
@@ -647,54 +1245,76 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
 
                 const img =
-                    element.querySelector("img");
+                    element.querySelector(
+                        "img"
+                    );
 
 
-                await waitForImage(img);
+                if (img.complete) {
 
+                    finalCtx.drawImage(
+                        img,
+                        -element.offsetWidth / 2,
+                        -element.offsetHeight / 2,
+                        element.offsetWidth,
+                        element.offsetHeight
+                    );
 
-                const width =
-                    parseFloat(img.style.width);
-
-
-                const height =
-                    img.naturalHeight /
-                    img.naturalWidth *
-                    width;
-
-
-                finalCtx.drawImage(
-                    img,
-                    x,
-                    y,
-                    width,
-                    height
-                );
+                }
 
             }
+
+
+            finalCtx.restore();
 
         }
 
 
         return finalCanvas;
+
     }
 
 
-    function drawShirtOnContext(context) {
+    /* =========================
+       DRAW SHIRT EXPORT
+    ========================= */
 
-        context.clearRect(
-            0,
-            0,
-            CANVAS_WIDTH,
-            CANVAS_HEIGHT
+    function drawShirtOnContext(
+        context
+    ) {
+
+        const sizeScale =
+            sizes[shirtSize].scale;
+
+
+        context.save();
+
+
+        context.translate(
+            WIDTH / 2,
+            HEIGHT / 2
+        );
+
+
+        context.scale(
+            sizeScale,
+            sizeScale
+        );
+
+
+        context.translate(
+            -WIDTH / 2,
+            -HEIGHT / 2
         );
 
 
         context.fillStyle =
             shirtColor;
 
+
         context.strokeStyle =
-            "#d1d5db";
+            "#cfd3d8";
+
 
         context.lineWidth = 2;
 
@@ -743,166 +1363,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
         context.closePath();
 
+
         context.fill();
 
         context.stroke();
 
 
-        context.beginPath();
-
-        context.arc(
-            180,
-            85,
-            35,
-            0,
-            Math.PI
-        );
-
-        context.strokeStyle =
-            "rgba(0,0,0,.12)";
-
-        context.stroke();
+        context.restore();
 
     }
-
-
-    function waitForImage(img) {
-
-        return new Promise(resolve => {
-
-            if (img.complete) {
-
-                resolve();
-
-                return;
-            }
-
-
-            img.onload =
-                resolve;
-
-        });
-
-    }
-
-
-    /* =========================
-       DOWNLOAD
-    ========================= */
-
-    downloadButton.addEventListener(
-        "click",
-        async () => {
-
-            const finalCanvas =
-                await createFinalCanvas();
-
-
-            const link =
-                document.createElement("a");
-
-            link.download =
-                "my-tshirt-design.png";
-
-            link.href =
-                finalCanvas.toDataURL(
-                    "image/png"
-                );
-
-            link.click();
-
-            showToast(
-                "Your design is ready!"
-            );
-
-        }
-    );
-
-
-    /* =========================
-       SAVE TO SERVER
-    ========================= */
-
-    saveButton.addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                const finalCanvas =
-                    await createFinalCanvas();
-
-
-                const designData =
-                    finalCanvas.toDataURL(
-                        "image/png"
-                    );
-
-
-                const response =
-                    await fetch(
-                        "/save-design",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    design:
-                                        designData
-                                })
-                        }
-                    );
-
-
-                if (!response.ok) {
-                    throw new Error(
-                        "Failed to save design"
-                    );
-                }
-
-
-                showToast(
-                    "Design saved successfully!"
-                );
-
-            } catch (error) {
-
-                console.error(error);
-
-                showToast(
-                    "Could not save the design."
-                );
-
-            }
-
-        }
-    );
 
 
     /* =========================
        TOAST
     ========================= */
 
-    function showToast(message) {
+    function showToast(
+        message
+    ) {
 
         toast.textContent =
             message;
 
-        toast.classList.add("show");
+
+        toast.classList.add(
+            "show"
+        );
 
 
-        setTimeout(() => {
+        setTimeout(
+            () => {
 
-            toast.classList.remove(
-                "show"
-            );
+                toast.classList.remove(
+                    "show"
+                );
 
-        }, 2500);
+            },
+            2200
+        );
 
     }
 
