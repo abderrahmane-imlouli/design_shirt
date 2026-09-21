@@ -27,6 +27,8 @@ This project helped me:
 - Practice DOM manipulation using JavaScript
 - Understand interactive frontend design
 - Prepare for more advanced projects with backend integration
+## live Demo
+designyourshirt.netlify.app
 
 ## Project Status
 
